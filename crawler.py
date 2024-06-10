@@ -45,7 +45,6 @@ class RRCrawler:
                     for link in fiction.find_all("a"):
                         if "href" in link.attrs:
                             logging.info(f"Found: {link["href"]}")
-                    # yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
                     yield None
 
     def add_new_urls(self, url):
@@ -60,7 +59,10 @@ class RRCrawler:
                     logging.info(f"Found: {url.url}")
                     self.add_new_urls(url)
 
-    def run(self):
+    def run(self, N):
+        url = self.urls_to_visit.pop(0)
+        for i in range(N):
+            self.add_new_urls(URL(url.url + f"?page={i+1}", PageType.SEARCH))
         while self.urls_to_visit:
             url = self.urls_to_visit.pop(0)
             logging.info(f"Crawling: {url.url}")
@@ -73,8 +75,8 @@ class RRCrawler:
 if __name__ == "__main__":
     if True:
         RRCrawler(
-            [URL("https://www.royalroad.com/fictions/search?page=1", PageType.SEARCH)]
-        ).run()
+            [URL("https://www.royalroad.com/fictions/search", PageType.SEARCH)]
+        ).run(10)
     else:
         print(
             urljoin(
