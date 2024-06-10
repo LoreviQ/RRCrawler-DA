@@ -41,9 +41,12 @@ class RRCrawler:
         match url.page_type:
             case PageType.SEARCH:
                 # yield the urls of all elements named "fiction-title" in the html
-                for link in soup.find_all("a"):
-                    logging.info(f"Found: {link["href"]}")
-                    yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
+                for fiction in soup.find_all(class_ = "fiction-title"):
+                    for link in fiction.find_all("a"):
+                        if "href" in link.attrs:
+                            logging.info(f"Found: {link["href"]}")
+                    # yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
+                    yield None
 
     def add_new_urls(self, url):
         if url not in self.urls_to_visit and url not in self.urls_visited:
@@ -53,8 +56,9 @@ class RRCrawler:
         html = self.download(target_url)
         if html:
             for url in self.get_new_urls(target_url, html):
-                logging.info(f"Found: {url.url}")
-                self.add_new_urls(url)
+                if url:
+                    logging.info(f"Found: {url.url}")
+                    self.add_new_urls(url)
 
     def run(self):
         while self.urls_to_visit:
