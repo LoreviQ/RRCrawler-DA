@@ -18,7 +18,6 @@ class URL:
     def __init__(self, url, page_type):
         self.url = url
         self.page_type = page_type
-        self.visited = False
 
     def __eq__(self, other):
         return self.url == other.url
@@ -26,9 +25,11 @@ class URL:
 
 class RRCrawler:
     def __init__(self, urls=[]):
-        self.urls = urls
+        self.urls_to_visit = urls
+        self.urls_visited = []
 
     def download(self, url):
+        logging.info(f"Downloading: {url.url}")
         response = requests.get(url.url)
         if response.status_code == 200:
             return response.text
@@ -39,11 +40,30 @@ class RRCrawler:
         soup = BeautifulSoup(html, "html.parser")
         match url.page_type:
             case PageType.SEARCH:
-                # yield the urls of all elements bamed "fiction-title" in the html
-                for link in soup.find_all("a", class_="fiction-title"):
+                # yield the urls of all elements named "fiction-title" in the html
+                for link in soup.find_all("a"):
+                    logging.info(f"Found: {link["href"]}")
                     yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
-            case _:
-                return "invalid page type"
+
+    def add_new_urls(self, url):
+        if url not in self.urls_to_visit and url not in self.urls_visited:
+            self.urls_to_visit.append(url)
+
+    def crawl(self, target_url):
+        html = self.download(target_url)
+        if html:
+            for url in self.get_new_urls(target_url, html):
+                logging.info(f"Found: {url.url}")
+                self.add_new_urls(url)
+
+    def run(self):
+        while self.urls_to_visit:
+            url = self.urls_to_visit.pop(0)
+            logging.info(f"Crawling: {url.url}")
+            try:
+                self.crawl(url)
+            except Exception:
+                logging.exception(f"Failed to crawl: {url}")
 
 
 if __name__ == "__main__":
