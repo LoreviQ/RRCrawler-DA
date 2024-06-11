@@ -37,7 +37,28 @@ class DataHandler:
         pages: int
         tags: list of str
         """
+        if len(fiction) != 8:
+            raise ValueError("Chapter must have 8 items.")
         self.fictions += [fiction]
+
+    def new_chapter(self, chapter):
+        """
+        Adds a new chapter to the dataset.
+
+        chapter is an 7 item list with the following format:
+        [ID, fiction_id, title, date, words, chapter_number, comments]
+        and data types:
+        ID: int
+        fiction_id: int
+        title: str
+        date: str
+        words: int
+        chapter_number: int
+        comments: int
+        """
+        if len(chapter) != 7:
+            raise ValueError("Chapter must have 7 items.")
+        self.chapters += [chapter]
 
     def save(self):
         """Saves the data to a file using pickle."""
