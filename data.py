@@ -176,3 +176,53 @@ if __name__ == "__main__":
     data_handler2 = DataHandler()
     assert data_handler2.fictions == data_handler.fictions
     print("Save Method test passed.")
+
+    print("Testing Update Fiction Method...")
+    data_handler.update_fiction(
+        1,
+        [
+            "Updated Test Fiction",
+            200,
+            4.7,
+            1500,
+            15,
+            150,
+            ["fantasy", "adventure"],
+            "Updated Test Author",
+        ],
+    )
+    assert data_handler.fictions == [
+        [
+            1,
+            "Updated Test Fiction",
+            200,
+            4.7,
+            1500,
+            15,
+            150,
+            ["fantasy", "adventure"],
+            "Updated Test Author",
+        ],
+        [
+            2,
+            "Test Fiction 2",
+            200,
+            4,
+            3000,
+            20,
+            300,
+            ["litrpg", "isekai"],
+            "Test Author 2",
+        ],
+    ]
+    print("Update Fiction Method test passed.")
+
+    print("Testing Update Chapter Method...")
+    data_handler.update_chapter(
+        1, [1, "Updated Test Chapter", "2021-01-01", 1000, 1, 10]
+    )
+    assert data_handler.chapters == [
+        [1, 1, "Updated Test Chapter", "2021-01-01", 1000, 1, 10],
+        [2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20],
+    ]
+    print("Update Chapter Method test passed.")
