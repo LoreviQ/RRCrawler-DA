@@ -65,23 +65,7 @@ class RRCrawler:
                     yield self.extract_search_data(fiction, url)
                     break  # remove to run across whole site
             case PageType.FICTION:
-                fiction_id = int(url.url.split("/")[4])
-                header = soup.find("div", class_="row fic-header")
-                author = header.find("a").text
-                fiction = self.data_handler.get_fiction(fiction_id)
-                if fiction:
-                    self.data_handler.update_fiction(
-                        fiction_id,
-                        fiction[1:-1] + [author],
-                    )
-                else:
-                    self.data_handler.new_fiction([fiction_id] + [None] * 7 + [author])
-                chapter = soup.find("tr", class_="chapter-row")
-                if chapter:
-                    yield URL(
-                        urljoin(url.url, chapter.find("a")["href"]), PageType.CHAPTER
-                    )
-
+                yield self.extract_fiction_data(soup, url)
             case PageType.CHAPTER:
                 logging.info("Chapter not yet implemented")
             case _:
@@ -120,6 +104,7 @@ class RRCrawler:
         self.data_handler.save()
 
     def extract_search_data(self, fiction, url):
+        """Extracts the data from a fiction search result."""
         link = fiction.find("a")
         if "href" in link.attrs:
             new_url = URL(urljoin(url.url, link["href"]), PageType.FICTION)
@@ -143,6 +128,22 @@ class RRCrawler:
         fiction_list += [None]
         self.data_handler.new_fiction(fiction_list)
         return new_url
+
+    def extract_fiction_data(self, soup, url):
+        """Extracts the data from a fiction page."""
+        fiction_id = int(url.url.split("/")[4])
+        header = soup.find("div", class_="row fic-header")
+        author = header.find("a").text
+        fiction = self.data_handler.get_fiction(fiction_id)
+        if fiction:
+            self.data_handler.update_fiction(
+                fiction_id,
+                fiction[1:-1] + [author],
+            )
+        else:
+            self.data_handler.new_fiction([fiction_id] + [None] * 7 + [author])
+        chapter = soup.find("tr", class_="chapter-row")
+        return URL(urljoin(url.url, chapter.find("a")["href"]), PageType.CHAPTER)
 
 
 if __name__ == "__main__":
