@@ -91,6 +91,14 @@ if __name__ == "__main__":
         [2, "Test Fiction 2", 200, 4, 3000, 20, 300, ["litrpg", "isekai"]],
     ]
     print("New Fiction Method test passed.")
+    print("Testing New Chapter Method...")
+    data_handler.new_chapter([1, 1, "Test Chapter", "2021-01-01", 1000, 1, 10])
+    data_handler.new_chapter([2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20])
+    assert data_handler.chapters == [
+        [1, 1, "Test Chapter", "2021-01-01", 1000, 1, 10],
+        [2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20],
+    ]
+    print("New Chapter Method test passed.")
     print("Testing Save Method...")
     data_handler.save()
     data_handler2 = DataHandler()
