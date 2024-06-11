@@ -62,11 +62,8 @@ class RRCrawler:
             case PageType.SEARCH:
                 # yield the urls of all elements named "fiction-title" in the html
                 for fiction in soup.find_all(class_="fiction-title"):
-                    self.extract_search_data(fiction)
-                    link = fiction.find("a")
-                    if "href" in link.attrs:
-                        yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
-                    break
+                    yield self.extract_search_data(fiction, url)
+                    break  # remove to run across whole site
             case PageType.FICTION:
                 fiction_id = int(url.url.split("/")[4])
                 header = soup.find("div", class_="row fic-header")
@@ -122,8 +119,10 @@ class RRCrawler:
                 logging.exception("Failed to crawl: %s", url.url)
         self.data_handler.save()
 
-    def extract_search_data(self, fiction):
+    def extract_search_data(self, fiction, url):
         link = fiction.find("a")
+        if "href" in link.attrs:
+            new_url = URL(urljoin(url.url, link["href"]), PageType.FICTION)
         fiction_list = []
         fiction_list += [int(link["href"].split("/")[2])]
         fiction_list += [link.text]
@@ -143,6 +142,7 @@ class RRCrawler:
         fiction_list += [[x for x in siblings[0].text.split("\n") if x != ""]]
         fiction_list += [None]
         self.data_handler.new_fiction(fiction_list)
+        return new_url
 
 
 if __name__ == "__main__":
