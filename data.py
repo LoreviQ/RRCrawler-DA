@@ -59,6 +59,17 @@ class DataHandler:
                 self.fictions[i] = [fiction_id] + fiction
                 break
 
+    def get_fiction(self, fiction_id):
+        """
+        Returns the fiction with the given ID.
+
+        fiction_id is the ID of the fiction to return.
+        """
+        for f in self.fictions:
+            if f[0] == fiction_id:
+                return f
+        return None
+
     def new_chapter(self, chapter):
         """
         Adds a new chapter to the dataset.
@@ -91,6 +102,17 @@ class DataHandler:
             if c[0] == chapter_id:
                 self.chapters[i] = [chapter_id] + chapter
                 break
+
+    def get_chapter(self, chapter_id):
+        """
+        Returns the chapter with the given ID.
+
+        chapter_id is the ID of the chapter to return.
+        """
+        for c in self.chapters:
+            if c[0] == chapter_id:
+                return c
+        return None
 
     def save(self):
         """Saves the data to a file using pickle."""
