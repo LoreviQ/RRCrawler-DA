@@ -14,10 +14,12 @@ class DataHandler:
 
     def __init__(self, load=True):
         """Initializes the data handler with initial dataset"""
+        self.filenames = {"fictions": "fictions.pkl", "chapters": "chapters.pkl"}
         if load:
             self.load()
         else:
             self.fictions = []
+            self.chapters = []
 
     def new_fiction(self, fiction):
         """
@@ -39,17 +41,18 @@ class DataHandler:
 
     def save(self):
         """Saves the data to a file using pickle."""
-
-        with open("fictions.pkl", "wb") as f:
-            pickle.dump(self.fictions, f)
+        for attr, filename in self.filenames.items():
+            with open(filename, "wb") as f:
+                pickle.dump(getattr(self, attr), f)
 
     def load(self):
         """Loads the data from a file using pickle."""
-        try:
-            with open("fictions.pkl", "rb") as f:
-                self.fictions = pickle.load(f)
-        except FileNotFoundError:
-            self.fictions = []
+        for attr, filename in self.filenames.items():
+            try:
+                with open(filename, "rb") as f:
+                    setattr(self, attr, pickle.load(f))
+            except FileNotFoundError:
+                setattr(self, attr, [])
 
 
 if __name__ == "__main__":
