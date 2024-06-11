@@ -13,6 +13,8 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
+from data import DataHandler
+
 logging.basicConfig(format="%(asctime)s %(levelname)s:%(message)s", level=logging.INFO)
 
 
@@ -38,10 +40,11 @@ class URL:
 class RRCrawler:
     """Class to crawl Royal Road."""
 
-    def __init__(self, urls):
+    def __init__(self, urls, data_handler=DataHandler()):
         """Initializes the crawler with a list of URLs to visit."""
         self.urls_to_visit = urls
         self.urls_visited = []
+        self.data_handler = data_handler
 
     def download(self, url):
         """Downloads the HTML of the given URL."""

@@ -39,8 +39,22 @@ class DataHandler:
         author: str
         """
         if len(fiction) != 9:
-            raise ValueError("Chapter must have 8 items.")
+            raise ValueError("Fiction must have 9 items.")
         self.fictions += [fiction]
+
+    def update_fiction(self, fiction_id, fiction):
+        """
+        Updates a fiction in the dataset.
+
+        fiction_id is the ID of the fiction to update.
+        fiction is an 8 item list containing the updated information.
+        """
+        if len(fiction) != 8:
+            raise ValueError("Fiction must have 8 items.")
+        for i, f in enumerate(self.fictions):
+            if f[0] == fiction_id:
+                self.fictions[i] = [fiction_id] + fiction
+                break
 
     def new_chapter(self, chapter):
         """
@@ -60,6 +74,20 @@ class DataHandler:
         if len(chapter) != 7:
             raise ValueError("Chapter must have 7 items.")
         self.chapters += [chapter]
+
+    def update_chapter(self, chapter_id, chapter):
+        """
+        Updates a chapter in the dataset.
+
+        chapter_id is the ID of the chapter to update.
+        chapter is an 6 item list containing the updated information.
+        """
+        if len(chapter) != 6:
+            raise ValueError("Chapter must have 6 items.")
+        for i, c in enumerate(self.chapters):
+            if c[0] == chapter_id:
+                self.chapters[i] = [chapter_id] + chapter
+                break
 
     def save(self):
         """Saves the data to a file using pickle."""
