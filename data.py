@@ -31,10 +31,10 @@ class DataHandler:
         ID: int
         title: str
         followers: int
-        rating: float
+        pages: int
         views: int
         chapters: int
-        pages: int
+        rating: float
         tags: list of str
         author: str
         """

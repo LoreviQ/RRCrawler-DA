@@ -62,9 +62,11 @@ class RRCrawler:
             case PageType.SEARCH:
                 # yield the urls of all elements named "fiction-title" in the html
                 for fiction in soup.find_all(class_="fiction-title"):
-                    for link in fiction.find_all("a"):
-                        if "href" in link.attrs:
-                            yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
+                    self.extract_search_data(fiction)
+                    link = fiction.find("a")
+                    if "href" in link.attrs:
+                        yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
+                    break
 
     def add_new_urls(self, url):
         """Adds the given URL to the list of URLs to visit."""
@@ -82,7 +84,7 @@ class RRCrawler:
                         url.url,
                         url.page_type,
                     )
-                    self.add_new_urls(url)
+                    # self.add_new_urls(url)
 
     def run(self, N):
         """Runs the crawler."""
@@ -96,3 +98,25 @@ class RRCrawler:
                 self.crawl(url)
             except Exception:
                 logging.exception("Failed to crawl: %s", url.url)
+
+    def extract_search_data(self, fiction):
+        link = fiction.find("a")
+        fiction_list = []
+        fiction_list += [link["href"].split("/")[2]]
+        fiction_list += [link.text]
+        siblings = fiction.findNextSiblings()
+        stats = siblings[1].contents
+        i = 0
+        for stat_txt in stats:
+            stat_str = str.strip(stat_txt.text)
+            if stat_str:
+                fiction_list += [
+                    int(stat_str.split(" ", maxsplit=1)[0].replace(",", ""))
+                ]
+                i += 1
+            if i == 4:
+                break
+        fiction_list += [float(siblings[1].contents[3].find("span")["title"])]
+        fiction_list += [[x for x in siblings[0].text.split("\n") if x != ""]]
+        fiction_list += [None]
+        self.data_handler.new_fiction(fiction_list)
