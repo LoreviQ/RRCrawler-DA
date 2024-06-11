@@ -25,8 +25,8 @@ class DataHandler:
         """
         Adds a new fiction to the dataset.
 
-        fiction is an 8 item list with the following format:
-        [ID, title, followers, rating, views, chapters, pages, tags]
+        fiction is an 9 item list with the following format:
+        [ID, title, followers, rating, views, chapters, pages, tags, author]
         and data types:
         ID: int
         title: str
@@ -36,8 +36,9 @@ class DataHandler:
         chapters: int
         pages: int
         tags: list of str
+        author: str
         """
-        if len(fiction) != 8:
+        if len(fiction) != 9:
             raise ValueError("Chapter must have 8 items.")
         self.fictions += [fiction]
 
@@ -79,18 +80,60 @@ class DataHandler:
 if __name__ == "__main__":
     # Test the DataHandler class
     data_handler = DataHandler(load=False)
+
     print("Testing New Fiction Method...")
     data_handler.new_fiction(
-        [1, "Test Fiction", 100, 4.5, 1000, 10, 100, ["fantasy", "adventure"]]
+        [
+            1,
+            "Test Fiction",
+            100,
+            4.5,
+            1000,
+            10,
+            100,
+            ["fantasy", "adventure"],
+            "Test Author",
+        ]
     )
     data_handler.new_fiction(
-        [2, "Test Fiction 2", 200, 4, 3000, 20, 300, ["litrpg", "isekai"]]
+        [
+            2,
+            "Test Fiction 2",
+            200,
+            4,
+            3000,
+            20,
+            300,
+            ["litrpg", "isekai"],
+            "Test Author 2",
+        ]
     )
     assert data_handler.fictions == [
-        [1, "Test Fiction", 100, 4.5, 1000, 10, 100, ["fantasy", "adventure"]],
-        [2, "Test Fiction 2", 200, 4, 3000, 20, 300, ["litrpg", "isekai"]],
+        [
+            1,
+            "Test Fiction",
+            100,
+            4.5,
+            1000,
+            10,
+            100,
+            ["fantasy", "adventure"],
+            "Test Author",
+        ],
+        [
+            2,
+            "Test Fiction 2",
+            200,
+            4,
+            3000,
+            20,
+            300,
+            ["litrpg", "isekai"],
+            "Test Author 2",
+        ],
     ]
     print("New Fiction Method test passed.")
+
     print("Testing New Chapter Method...")
     data_handler.new_chapter([1, 1, "Test Chapter", "2021-01-01", 1000, 1, 10])
     data_handler.new_chapter([2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20])
@@ -99,6 +142,7 @@ if __name__ == "__main__":
         [2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20],
     ]
     print("New Chapter Method test passed.")
+
     print("Testing Save Method...")
     data_handler.save()
     data_handler2 = DataHandler()
