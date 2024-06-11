@@ -66,7 +66,6 @@ class RRCrawler:
                     link = fiction.find("a")
                     if "href" in link.attrs:
                         yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
-                    break
 
     def add_new_urls(self, url):
         """Adds the given URL to the list of URLs to visit."""
@@ -98,6 +97,7 @@ class RRCrawler:
                 self.crawl(url)
             except Exception:
                 logging.exception("Failed to crawl: %s", url.url)
+        self.data_handler.save()
 
     def extract_search_data(self, fiction):
         link = fiction.find("a")
@@ -120,3 +120,8 @@ class RRCrawler:
         fiction_list += [[x for x in siblings[0].text.split("\n") if x != ""]]
         fiction_list += [None]
         self.data_handler.new_fiction(fiction_list)
+
+
+if __name__ == "__main__":
+    data_handler = DataHandler()
+    data_handler.log()

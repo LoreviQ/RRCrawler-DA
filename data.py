@@ -40,6 +40,9 @@ class DataHandler:
         """
         if len(fiction) != 9:
             raise ValueError("Fiction must have 9 items.")
+        for f in self.fictions:
+            if f[0] == fiction[0]:
+                self.update_fiction(fiction[0], fiction[1:])
         self.fictions += [fiction]
 
     def update_fiction(self, fiction_id, fiction):
@@ -103,6 +106,15 @@ class DataHandler:
                     setattr(self, attr, pickle.load(f))
             except FileNotFoundError:
                 setattr(self, attr, [])
+
+    def log(self):
+        """Prints the data to the console."""
+        print("Fictions:")
+        for f in self.fictions:
+            print(f)
+        print("Chapters:")
+        for c in self.chapters:
+            print(c)
 
 
 if __name__ == "__main__":
