@@ -79,6 +79,12 @@ class RRCrawler:
                     )
                 else:
                     self.data_handler.new_fiction([fiction_id] + [None] * 7 + [author])
+                chapter = soup.find("tr", class_="chapter-row")
+                if chapter:
+                    yield URL(
+                        urljoin(url.url, chapter.find("a")["href"]), PageType.CHAPTER
+                    )
+
             case PageType.CHAPTER:
                 logging.info("Chapter not yet implemented")
             case _:
