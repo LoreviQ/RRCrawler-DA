@@ -68,9 +68,17 @@ class RRCrawler:
                         yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
                     break
             case PageType.FICTION:
+                fiction_id = int(url.url.split("/")[4])
                 header = soup.find("div", class_="row fic-header")
                 author = header.find("a").text
-                print(author)
+                fiction = self.data_handler.get_fiction(fiction_id)
+                if fiction:
+                    self.data_handler.update_fiction(
+                        fiction_id,
+                        fiction[1:-1] + [author],
+                    )
+                else:
+                    self.data_handler.new_fiction([fiction_id] + [None] * 7 + [author])
             case PageType.CHAPTER:
                 logging.info("Chapter not yet implemented")
             case _:
@@ -111,7 +119,7 @@ class RRCrawler:
     def extract_search_data(self, fiction):
         link = fiction.find("a")
         fiction_list = []
-        fiction_list += [link["href"].split("/")[2]]
+        fiction_list += [int(link["href"].split("/")[2])]
         fiction_list += [link.text]
         siblings = fiction.findNextSiblings()
         stats = siblings[1].contents
