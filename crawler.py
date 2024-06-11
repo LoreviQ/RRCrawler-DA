@@ -66,8 +66,11 @@ class RRCrawler:
                     link = fiction.find("a")
                     if "href" in link.attrs:
                         yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
+                    break
             case PageType.FICTION:
-                logging.info("Fiction not yet implemented")
+                header = soup.find("div", class_="row fic-header")
+                author = header.find("a").text
+                print(author)
             case PageType.CHAPTER:
                 logging.info("Chapter not yet implemented")
             case _:
