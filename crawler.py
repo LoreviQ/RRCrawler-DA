@@ -61,8 +61,7 @@ class RRCrawler:
                 for fiction in soup.find_all(class_="fiction-title"):
                     for link in fiction.find_all("a"):
                         if "href" in link.attrs:
-                            logging.info("Found: %s", link["href"])
-                    yield None
+                            yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
 
     def add_new_urls(self, url):
         """Adds the given URL to the list of URLs to visit."""
@@ -75,7 +74,11 @@ class RRCrawler:
         if html:
             for url in self.get_new_urls(target_url, html):
                 if url:
-                    logging.info("Found: %s", url)
+                    logging.info(
+                        "Found: %s, type %s",
+                        url.url,
+                        url.page_type,
+                    )
                     self.add_new_urls(url)
 
     def run(self, N):
@@ -90,9 +93,3 @@ class RRCrawler:
                 self.crawl(url)
             except Exception:
                 logging.exception("Failed to crawl: %s", url.url)
-
-
-if __name__ == "__main__":
-    RRCrawler([URL("https://www.royalroad.com/fictions/search", PageType.SEARCH)]).run(
-        10
-    )
