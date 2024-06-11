@@ -66,6 +66,12 @@ class RRCrawler:
                     link = fiction.find("a")
                     if "href" in link.attrs:
                         yield URL(urljoin(url.url, link["href"]), PageType.FICTION)
+            case PageType.FICTION:
+                logging.info("Fiction not yet implemented")
+            case PageType.CHAPTER:
+                logging.info("Chapter not yet implemented")
+            case _:
+                logging.error("Unknown page type: %s", url.page_type)
 
     def add_new_urls(self, url):
         """Adds the given URL to the list of URLs to visit."""
@@ -83,7 +89,7 @@ class RRCrawler:
                         url.url,
                         url.page_type,
                     )
-                    # self.add_new_urls(url)
+                    self.add_new_urls(url)
 
     def run(self, N):
         """Runs the crawler."""
