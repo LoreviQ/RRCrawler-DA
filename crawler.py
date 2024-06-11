@@ -1,3 +1,11 @@
+"""
+This module contains classes for the Royal Road crawler.
+
+Author: Oliver Jay
+Version: 1.0
+License: MIT
+"""
+
 import enum
 import logging
 from urllib.parse import urljoin
@@ -9,12 +17,16 @@ logging.basicConfig(format="%(asctime)s %(levelname)s:%(message)s", level=loggin
 
 
 class PageType(enum.Enum):
+    """Enum for the type of page being crawled."""
+
     SEARCH = "search"
     FICTION = "fiction"
     CHAPTER = "chapter"
 
 
 class URL:
+    """Class to represent a URL to be crawled."""
+
     def __init__(self, url, page_type):
         self.url = url
         self.page_type = page_type
@@ -24,63 +36,63 @@ class URL:
 
 
 class RRCrawler:
-    def __init__(self, urls=[]):
+    """Class to crawl Royal Road."""
+
+    def __init__(self, urls):
+        """Initializes the crawler with a list of URLs to visit."""
         self.urls_to_visit = urls
         self.urls_visited = []
 
     def download(self, url):
-        logging.info(f"Downloading: {url.url}")
-        response = requests.get(url.url)
+        """Downloads the HTML of the given URL."""
+        logging.info("Downloading: %s", url.url)
+        response = requests.get(url.url, timeout=5)
         if response.status_code == 200:
             return response.text
-        logging.error(f"Failed to download {url.url}")
+        logging.error("Failed to download %s", url.url)
         return None
 
     def get_new_urls(self, url, html):
+        """Parses the HTML and returns the URLs of interest."""
         soup = BeautifulSoup(html, "html.parser")
         match url.page_type:
             case PageType.SEARCH:
                 # yield the urls of all elements named "fiction-title" in the html
-                for fiction in soup.find_all(class_ = "fiction-title"):
+                for fiction in soup.find_all(class_="fiction-title"):
                     for link in fiction.find_all("a"):
                         if "href" in link.attrs:
-                            logging.info(f"Found: {link["href"]}")
+                            logging.info("Found: %s", link["href"])
                     yield None
 
     def add_new_urls(self, url):
+        """Adds the given URL to the list of URLs to visit."""
         if url not in self.urls_to_visit and url not in self.urls_visited:
             self.urls_to_visit.append(url)
 
     def crawl(self, target_url):
+        """Crawls the given URL."""
         html = self.download(target_url)
         if html:
             for url in self.get_new_urls(target_url, html):
                 if url:
-                    logging.info(f"Found: {url.url}")
+                    logging.info("Found: %s", url)
                     self.add_new_urls(url)
 
     def run(self, N):
+        """Runs the crawler."""
         url = self.urls_to_visit.pop(0)
         for i in range(N):
             self.add_new_urls(URL(url.url + f"?page={i+1}", PageType.SEARCH))
         while self.urls_to_visit:
             url = self.urls_to_visit.pop(0)
-            logging.info(f"Crawling: {url.url}")
+            logging.info("Crawling:%s", url.url)
             try:
                 self.crawl(url)
             except Exception:
-                logging.exception(f"Failed to crawl: {url}")
+                logging.exception("Failed to crawl: %s", url.url)
 
 
 if __name__ == "__main__":
-    if True:
-        RRCrawler(
-            [URL("https://www.royalroad.com/fictions/search", PageType.SEARCH)]
-        ).run(10)
-    else:
-        print(
-            urljoin(
-                "https://www.royalroad.com/fictions/search?page=1",
-                "/fiction/21220/mother-of-learning",
-            )
-        )
+    RRCrawler([URL("https://www.royalroad.com/fictions/search", PageType.SEARCH)]).run(
+        10
+    )
