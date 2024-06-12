@@ -111,65 +111,63 @@ if __name__ == "__main__":
     data_handler = DataHandler(load=False)
 
     print("Testing New Fiction Method...")
-    data_handler.new_fiction(
+    data_handler.put_fiction(
         [
             1,
             "Test Fiction",
             100,
-            4.5,
             1000,
             10,
             100,
+            4.5,
             ["fantasy", "adventure"],
             "Test Author",
         ]
     )
-    data_handler.new_fiction(
+    data_handler.put_fiction(
         [
             2,
             "Test Fiction 2",
             200,
-            4,
             3000,
             20,
             300,
+            4,
             ["litrpg", "isekai"],
             "Test Author 2",
         ]
     )
-    assert data_handler.fictions == [
-        [
-            1,
+    assert data_handler.fictions == {
+        1: [
             "Test Fiction",
             100,
-            4.5,
             1000,
             10,
             100,
+            4.5,
             ["fantasy", "adventure"],
             "Test Author",
         ],
-        [
-            2,
+        2: [
             "Test Fiction 2",
             200,
-            4,
             3000,
             20,
             300,
+            4,
             ["litrpg", "isekai"],
             "Test Author 2",
         ],
-    ]
+    }
     print("New Fiction Method test passed.")
 
     print("Testing New Chapter Method...")
-    data_handler.new_chapter([1, 1, "Test Chapter", "2021-01-01", 1000, 1, 10])
-    data_handler.new_chapter([2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20])
-    assert data_handler.chapters == [
-        [1, 1, "Test Chapter", "2021-01-01", 1000, 1, 10],
-        [2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20],
-    ]
+    data_handler.put_chapter([1, 1, "Test Chapter", 18916034, 1000, 10])
+    data_handler.put_chapter([2, 1, "Test Chapter 2", 18916034, 2000, 20])
+    assert data_handler.chapters == {
+        1: [1, "Test Chapter", 18916034, 1000, 10],
+        2: [1, "Test Chapter 2", 18916034, 2000, 20],
+    }
     print("New Chapter Method test passed.")
 
     print("Testing Save Method...")
@@ -179,51 +177,47 @@ if __name__ == "__main__":
     print("Save Method test passed.")
 
     print("Testing Update Fiction Method...")
-    data_handler.update_fiction(
-        1,
-        [
-            "Updated Test Fiction",
-            200,
-            4.7,
-            1500,
-            15,
-            150,
-            ["fantasy", "adventure"],
-            "Updated Test Author",
-        ],
-    )
-    assert data_handler.fictions == [
+    data_handler.put_fiction(
         [
             1,
             "Updated Test Fiction",
             200,
-            4.7,
             1500,
             15,
             150,
+            4.7,
             ["fantasy", "adventure"],
             "Updated Test Author",
         ],
-        [
-            2,
+    )
+    assert data_handler.fictions == {
+        1: [
+            "Updated Test Fiction",
+            200,
+            1500,
+            15,
+            150,
+            4.7,
+            ["fantasy", "adventure"],
+            "Updated Test Author",
+        ],
+        2: [
             "Test Fiction 2",
             200,
-            4,
             3000,
             20,
             300,
+            4,
             ["litrpg", "isekai"],
             "Test Author 2",
         ],
-    ]
+    }
     print("Update Fiction Method test passed.")
 
     print("Testing Update Chapter Method...")
-    data_handler.update_chapter(
-        1, [1, "Updated Test Chapter", "2021-01-01", 1000, 1, 10]
-    )
-    assert data_handler.chapters == [
-        [1, 1, "Updated Test Chapter", "2021-01-01", 1000, 1, 10],
-        [2, 1, "Test Chapter 2", "2021-01-02", 2000, 2, 20],
-    ]
+    data_handler.put_chapter([1, 1, "Updated Test Chapter", 18916034, 1000, 10])
+    assert data_handler.chapters == {
+        1: [1, "Updated Test Chapter", 18916034, 1000, 10],
+        2: [1, "Test Chapter 2", 18916034, 2000, 20],
+    }
     print("Update Chapter Method test passed.")
