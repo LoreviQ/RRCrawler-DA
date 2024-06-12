@@ -67,7 +67,7 @@ class RRCrawler:
             case PageType.FICTION:
                 yield self.extract_fiction_data(soup, url)
             case PageType.CHAPTER:
-                yield self.extract_chapter_data(soup, url)
+                self.extract_chapter_data(soup, url)
             case _:
                 logging.error("Unknown page type: %s", url.page_type)
 
@@ -126,7 +126,7 @@ class RRCrawler:
         fiction_list += [float(siblings[1].contents[3].find("span")["title"])]
         fiction_list += [[x for x in siblings[0].text.split("\n") if x != ""]]
         fiction_list += [None]
-        self.data_handler.new_fiction(fiction_list)
+        self.data_handler.put_fiction(fiction_list)
         return new_url
 
     def extract_fiction_data(self, soup, url):
@@ -134,14 +134,13 @@ class RRCrawler:
         fiction_id = int(url.url.split("/")[4])
         header = soup.find("div", class_="row fic-header")
         author = header.find("a").text
-        fiction = self.data_handler.get_fiction(fiction_id)
-        if fiction:
-            self.data_handler.update_fiction(
-                fiction_id,
-                fiction[1:-1] + [author],
+        try:
+            fiction = self.data_handler.get_fiction(fiction_id)
+            self.data_handler.put_fiction(
+                [fiction_id] + fiction[:-1] + [author],
             )
-        else:
-            self.data_handler.new_fiction([fiction_id] + [None] * 7 + [author])
+        except ValueError:
+            self.data_handler.put_fiction([fiction_id] + [None] * 7 + [author])
         chapter = soup.find("tr", class_="chapter-row")
         return URL(urljoin(url.url, chapter.find("a")["href"]), PageType.CHAPTER)
 
@@ -149,7 +148,7 @@ class RRCrawler:
         """Extracts the data from a chapter page."""
         url_split = url.url.split("/")
         chapter_id = int(url_split[7])
-        fiction_title = int(url_split[5])
+        fiction_title = url_split[5]
         fiction_id = int(url_split[4])
         title = url_split[8]
         date = int(
@@ -161,7 +160,7 @@ class RRCrawler:
         comments = int(
             soup.find("div", class_="caption-subject").text.split("(")[1].split(")")[0]
         )
-        self.data_handler.new_chapter(
+        self.data_handler.put_chapter(
             [fiction_id, chapter_id, title, date, word_count, comments]
         )
         try:

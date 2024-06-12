@@ -18,10 +18,10 @@ class DataHandler:
         if load:
             self.load()
         else:
-            self.fictions = []
-            self.chapters = []
+            self.fictions = {}
+            self.chapters = {}
 
-    def new_fiction(self, fiction):
+    def put_fiction(self, fiction):
         """
         Adds a new fiction to the dataset.
 
@@ -40,24 +40,7 @@ class DataHandler:
         """
         if len(fiction) != 9:
             raise ValueError("Fiction must have 9 items.")
-        for f in self.fictions:
-            if f[0] == fiction[0]:
-                self.update_fiction(fiction[0], fiction[1:])
-        self.fictions += [fiction]
-
-    def update_fiction(self, fiction_id, fiction):
-        """
-        Updates a fiction in the dataset.
-
-        fiction_id is the ID of the fiction to update.
-        fiction is an 8 item list containing the updated information.
-        """
-        if len(fiction) != 8:
-            raise ValueError("Fiction must have 8 items.")
-        for i, f in enumerate(self.fictions):
-            if f[0] == fiction_id:
-                self.fictions[i] = [fiction_id] + fiction
-                break
+        self.fictions[fiction[0]] = fiction[1:]
 
     def get_fiction(self, fiction_id):
         """
@@ -65,12 +48,11 @@ class DataHandler:
 
         fiction_id is the ID of the fiction to return.
         """
-        for f in self.fictions:
-            if f[0] == fiction_id:
-                return f
-        return None
+        if fiction_id in self.fictions:
+            return self.fictions[fiction_id]
+        raise ValueError("Fiction not found.")
 
-    def new_chapter(self, chapter):
+    def put_chapter(self, chapter):
         """
         Adds a new chapter to the dataset.
 
@@ -86,21 +68,7 @@ class DataHandler:
         """
         if len(chapter) != 6:
             raise ValueError("Chapter must have 7 items.")
-        self.chapters += [chapter]
-
-    def update_chapter(self, chapter_id, chapter):
-        """
-        Updates a chapter in the dataset.
-
-        chapter_id is the ID of the chapter to update.
-        chapter is an 6 item list containing the updated information.
-        """
-        if len(chapter) != 6:
-            raise ValueError("Chapter must have 6 items.")
-        for i, c in enumerate(self.chapters):
-            if c[0] == chapter_id:
-                self.chapters[i] = [chapter_id] + chapter
-                break
+        self.chapters[chapter[0]] = chapter[1:]
 
     def get_chapter(self, chapter_id):
         """
@@ -126,16 +94,16 @@ class DataHandler:
                 with open(filename, "rb") as f:
                     setattr(self, attr, pickle.load(f))
             except FileNotFoundError:
-                setattr(self, attr, [])
+                setattr(self, attr, {})
 
     def log(self):
         """Prints the data to the console."""
         print("Fictions:")
-        for f in self.fictions:
-            print(f)
+        for fic_id, fiction in self.fictions.items():
+            print(fic_id, fiction)
         print("Chapters:")
-        for c in self.chapters:
-            print(c)
+        for chap_id, chapter in self.chapters.items():
+            print(chap_id, chapter)
 
 
 if __name__ == "__main__":
