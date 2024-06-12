@@ -67,7 +67,7 @@ class RRCrawler:
             case PageType.FICTION:
                 yield self.extract_fiction_data(soup, url)
             case PageType.CHAPTER:
-                logging.info("Chapter not yet implemented")
+                yield self.extract_chapter_data(soup, url)
             case _:
                 logging.error("Unknown page type: %s", url.page_type)
 
@@ -144,6 +144,35 @@ class RRCrawler:
             self.data_handler.new_fiction([fiction_id] + [None] * 7 + [author])
         chapter = soup.find("tr", class_="chapter-row")
         return URL(urljoin(url.url, chapter.find("a")["href"]), PageType.CHAPTER)
+
+    def extract_chapter_data(self, soup, url):
+        """Extracts the data from a chapter page."""
+        url_split = url.url.split("/")
+        chapter_id = int(url_split[7])
+        fiction_title = int(url_split[5])
+        fiction_id = int(url_split[4])
+        title = url_split[8]
+        date = int(
+            soup.find("i", class_="fa fa-calendar").findNextSiblings()[0]["unixtime"]
+        )
+        word_count = len(
+            soup.find("div", class_="chapter-inner chapter-content").text.split()
+        )
+        comments = int(
+            soup.find("div", class_="caption-subject").text.split("(")[1].split(")")[0]
+        )
+        self.data_handler.new_chapter(
+            [fiction_id, chapter_id, title, date, word_count, comments]
+        )
+        try:
+            new_url = (
+                soup.find("div", class_="row nav-buttons")
+                .find_all("div")[1]
+                .find("a")["href"]
+            )
+            return URL(urljoin(url.url, new_url), PageType.CHAPTER)
+        except KeyError:
+            logging.info("Finished crawling %s", fiction_title)
 
 
 if __name__ == "__main__":

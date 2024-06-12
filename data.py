@@ -80,12 +80,11 @@ class DataHandler:
         ID: int
         fiction_id: int
         title: str
-        date: str
+        date: int (unixtime)
         words: int
-        chapter_number: int
         comments: int
         """
-        if len(chapter) != 7:
+        if len(chapter) != 6:
             raise ValueError("Chapter must have 7 items.")
         self.chapters += [chapter]
 
