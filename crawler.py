@@ -40,11 +40,11 @@ class URL:
 class RRCrawler:
     """Class to crawl Royal Road."""
 
-    def __init__(self, urls, data_handler=DataHandler()):
+    def __init__(self, urls, dh=DataHandler()):
         """Initializes the crawler with a list of URLs to visit."""
         self.urls_to_visit = urls
         self.urls_visited = []
-        self.data_handler = data_handler
+        self.data_handler = dh
 
     def download(self, url):
         """Downloads the HTML of the given URL."""
