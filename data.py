@@ -82,10 +82,9 @@ class DataHandler:
 
         chapter_id is the ID of the chapter to return.
         """
-        for c in self.chapters:
-            if c[0] == chapter_id:
-                return c
-        return None
+        if chapter_id in self.chapters:
+            return self.chapters[chapter_id]
+        raise ValueError("Chapter not found.")
 
     def save(self):
         """Saves the data to a file using pickle."""
