@@ -164,7 +164,7 @@ class RRCrawler:
             soup.find("div", class_="caption-subject").text.split("(")[1].split(")")[0]
         )
         self.data_handler.put_chapter(
-            [fiction_id, chapter_id, title, date, word_count, comments]
+            [chapter_id, fiction_id, title, date, word_count, comments]
         )
         try:
             new_url = (
@@ -173,7 +173,7 @@ class RRCrawler:
                 .find("a")["href"]
             )
             return URL(urljoin(url.url, new_url), PageType.CHAPTER)
-        except KeyError:
+        except (KeyError, TypeError):
             logging.info("Finished crawling %s", fiction_title)
 
     def delay(self):

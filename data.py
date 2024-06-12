@@ -12,9 +12,15 @@ import pickle
 class DataHandler:
     """Class to handle the data from the Royal Road crawler."""
 
-    def __init__(self, load=True):
+    def __init__(self, load=True, test=False):
         """Initializes the data handler with initial dataset"""
-        self.filenames = {"fictions": "fictions.pkl", "chapters": "chapters.pkl"}
+        if test:
+            self.filenames = {
+                "fictions": "fictions_test.pkl",
+                "chapters": "chapters_test.pkl",
+            }
+        else:
+            self.filenames = {"fictions": "fictions.pkl", "chapters": "chapters.pkl"}
         if load:
             self.load()
         else:
@@ -108,7 +114,7 @@ class DataHandler:
 
 if __name__ == "__main__":
     # Test the DataHandler class
-    data_handler = DataHandler(load=False)
+    data_handler = DataHandler(load=False, test=True)
 
     print("Testing New Fiction Method...")
     data_handler.put_fiction(
@@ -172,7 +178,7 @@ if __name__ == "__main__":
 
     print("Testing Save Method...")
     data_handler.save()
-    data_handler2 = DataHandler()
+    data_handler2 = DataHandler(load=True, test=True)
     assert data_handler2.fictions == data_handler.fictions
     print("Save Method test passed.")
 
