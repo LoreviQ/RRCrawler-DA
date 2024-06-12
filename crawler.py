@@ -8,6 +8,8 @@ License: MIT
 
 import enum
 import logging
+import random
+import time
 from urllib.parse import urljoin
 
 import requests
@@ -67,7 +69,7 @@ class RRCrawler:
             case PageType.FICTION:
                 yield self.extract_fiction_data(soup, url)
             case PageType.CHAPTER:
-                self.extract_chapter_data(soup, url)
+                yield self.extract_chapter_data(soup, url)
             case _:
                 logging.error("Unknown page type: %s", url.page_type)
 
@@ -89,11 +91,12 @@ class RRCrawler:
                     )
                     self.add_new_urls(url)
 
-    def run(self, N):
+    def run(self, end, start=0):
         """Runs the crawler."""
         url = self.urls_to_visit.pop(0)
-        for i in range(N):
-            self.add_new_urls(URL(url.url + f"?page={i+1}", PageType.SEARCH))
+        for i in range(end):
+            n = start + i + 1
+            self.add_new_urls(URL(url.url + f"?page={n}", PageType.SEARCH))
         while self.urls_to_visit:
             url = self.urls_to_visit.pop(0)
             logging.info("Crawling:%s", url.url)
@@ -101,7 +104,8 @@ class RRCrawler:
                 self.crawl(url)
             except Exception:
                 logging.exception("Failed to crawl: %s", url.url)
-        self.data_handler.save()
+            self.data_handler.save()
+            self.delay()
 
     def extract_search_data(self, fiction, url):
         """Extracts the data from a fiction search result."""
@@ -172,6 +176,13 @@ class RRCrawler:
             return URL(urljoin(url.url, new_url), PageType.CHAPTER)
         except KeyError:
             logging.info("Finished crawling %s", fiction_title)
+
+    def delay(self):
+        """Random delay between 1 and 5 seconds."""
+        delay_time = 1 + random.uniform(0, 4)
+        log = f"Sleeping for {delay_time:.2f} seconds..."
+        logging.info(log)
+        time.sleep(delay_time)
 
 
 if __name__ == "__main__":
