@@ -65,7 +65,6 @@ class RRCrawler:
                 # yield the urls of all elements named "fiction-title" in the html
                 for fiction in soup.find_all(class_="fiction-title"):
                     yield self.extract_search_data(fiction, url)
-                    break  # remove to run across whole site
             case PageType.FICTION:
                 yield self.extract_fiction_data(soup, url)
             case PageType.CHAPTER:
